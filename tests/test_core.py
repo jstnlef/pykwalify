@@ -401,6 +401,13 @@ class TestCore(object):
                 )
                 c.validate()
 
+            compare(
+                sorted(c.validation_errors),
+                sorted(fail_validation_errors),
+                prefix="Wrong validation errors when parsing file : {0}".format(
+                    fail_test,
+                )
+            )
 
     def test_core_files(self):
         # These tests should pass with no exception raised
