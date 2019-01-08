@@ -73,13 +73,15 @@ class TestUnicode(object):
                 print(u"Running test files: {0}".format(f))
                 c = Core(source_data=data, schema_data=schema)
                 c.validate()
-                compare(c.validation_errors, [], prefix="No validation errors should exist...")
+                compare(c.validation_errors, [],
+                        prefix="No validation errors should exist...")
             except Exception as e:
                 print(u"ERROR RUNNING FILES: {0}".format(f))
                 raise e
 
             # This serve as an extra schema validation that tests more complex structures then testrule.py do
-            compare(c.root_rule.schema_str, schema, prefix=u"Parsed rules is not correct, something have changed... files : {0}".format(f))
+            compare(c.root_rule.schema_str, schema,
+                    prefix=u"Parsed rules is not correct, something have changed... files : {0}".format(f))
 
     def test_files_with_unicode_content_failing(self, tmpdir):
         """
@@ -132,6 +134,8 @@ class TestUnicode(object):
             except exception_type:
                 pass  # OK
             else:
-                raise AssertionError(u"Exception {0} not raised as expected... FILES: {1} : {2}".format(exception_type, exception_type))
+                raise AssertionError(u"Exception {0} not raised as expected... FILES: {1} : {2}".format(
+                    exception_type, exception_type))
 
-            compare(sorted(c.validation_errors), sorted(errors), prefix=u"Wrong validation errors when parsing files : {0}".format(f))
+            compare(sorted(c.validation_errors), sorted(
+                errors), prefix=u"Wrong validation errors when parsing files : {0}".format(f))

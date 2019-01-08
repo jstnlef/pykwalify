@@ -62,6 +62,37 @@ class Rule(object):
         self._unique = None
         self._version = None
 
+        self._func_mapping = {
+            "allowempty": self.init_allow_empty_map,
+            "assert": self.init_assert_value,
+            "class": lambda x, y, z: (),
+            "default": self.init_default_value,
+            "desc": self.init_desc_value,
+            "enum": self.init_enum_value,
+            "example": self.init_example,
+            "extensions": self.init_extensions,
+            "format": self.init_format_value,
+            "func": self.init_func,
+            "ident": self.init_ident_value,
+            "length": self.init_length_value,
+            "map": self.init_mapping_value,
+            "mapping": self.init_mapping_value,
+            "matching": self.init_matching,
+            "matching-rule": self.init_matching_rule,
+            "name": self.init_name_value,
+            "nul": self.init_nullable_value,
+            "nullable": self.init_nullable_value,
+            "pattern": self.init_pattern_value,
+            "range": self.init_range_value,
+            "req": self.init_required_value,
+            "required": self.init_required_value,
+            "seq": self.init_sequence_value,
+            "sequence": self.init_sequence_value,
+            "type": lambda x, y, z: (),
+            "unique": self.init_unique_value,
+            "version": self.init_version,
+        }
+
         if isinstance(schema, dict):
             self.init(schema, "")
 
@@ -407,40 +438,9 @@ class Rule(object):
             t = schema["type"]
             self.init_type_value(t, rule, path)
 
-        func_mapping = {
-            "allowempty": self.init_allow_empty_map,
-            "assert": self.init_assert_value,
-            "class": lambda x, y, z: (),
-            "default": self.init_default_value,
-            "desc": self.init_desc_value,
-            "enum": self.init_enum_value,
-            "example": self.init_example,
-            "extensions": self.init_extensions,
-            "format": self.init_format_value,
-            "func": self.init_func,
-            "ident": self.init_ident_value,
-            "length": self.init_length_value,
-            "map": self.init_mapping_value,
-            "mapping": self.init_mapping_value,
-            "matching": self.init_matching,
-            "matching-rule": self.init_matching_rule,
-            "name": self.init_name_value,
-            "nul": self.init_nullable_value,
-            "nullable": self.init_nullable_value,
-            "pattern": self.init_pattern_value,
-            "range": self.init_range_value,
-            "req": self.init_required_value,
-            "required": self.init_required_value,
-            "seq": self.init_sequence_value,
-            "sequence": self.init_sequence_value,
-            "type": lambda x, y, z: (),
-            "unique": self.init_unique_value,
-            "version": self.init_version,
-        }
-
         for k, v in schema.items():
-            if k in func_mapping:
-                func_mapping[k](v, rule, path)
+            if k in self._func_mapping:
+                self._func_mapping[k](v, rule, path)
             elif k.startswith("schema;"):
                 # Schema tag is only allowed on top level of data
                 log.debug(u"Found schema tag...")
@@ -1105,7 +1105,7 @@ class Rule(object):
         for i, e in enumerate(self.sequence):
             elem = e or {}
 
-            rule = Rule(None, self)
+            rule = type(self)(None, self)
             rule.init(elem, u"{0}/sequence/{1}".format(path, i))
 
             tmp_seq.append(rule)
@@ -1170,13 +1170,13 @@ class Rule(object):
                             path=path,
                         )
 
-                    regex_rule = Rule(None, self)
+                    regex_rule = type(self)(None, self)
                     regex_rule.init(v, u"{0}/mapping;regex/{1}".format(path, regex[1:-1]))
                     regex_rule.map_regex_rule = regex[1:-1]
                     self.regex_mappings.append(regex_rule)
                     self.mapping[k] = regex_rule
             else:
-                rule = Rule(None, self)
+                rule = type(self)(None, self)
                 rule.init(v, u"{0}/mapping/{1}".format(path, k))
                 self.mapping[k] = rule
 

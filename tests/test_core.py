@@ -42,7 +42,8 @@ class TestCore(object):
 
     def test_load_non_existing_file(self):
         file_to_load = "/tmp/foo/bar/barfoo"
-        assert not os.path.exists(file_to_load), "Following file cannot exists on your system while running these tests : {0}".format(file_to_load)
+        assert not os.path.exists(
+            file_to_load), "Following file cannot exists on your system while running these tests : {0}".format(file_to_load)
         with pytest.raises(CoreError) as ex:
             Core(source_file=file_to_load)
         assert "Provided source_file do not exists on disk" in str(ex.value)
@@ -52,7 +53,8 @@ class TestCore(object):
         Exception should be raised if the specefied schema file do not exists on disk.
         """
         file_to_load = "/tmp/foo/bar/barfoo"
-        assert not os.path.exists(file_to_load), "Following file cannot exists on your system while running these tests : {0}".format(file_to_load)
+        assert not os.path.exists(
+            file_to_load), "Following file cannot exists on your system while running these tests : {0}".format(file_to_load)
         with pytest.raises(CoreError) as ex:
             Core(schema_files=[file_to_load])
         assert "Provided source_file do not exists on disk" in str(ex.value)
@@ -104,11 +106,13 @@ class TestCore(object):
 
         with pytest.raises(CoreError) as ex:
             Core(source_file=str(source_f))
-        assert "Unable to load source_file. Unknown file format of specified file path" in str(ex.value)
+        assert "Unable to load source_file. Unknown file format of specified file path" in str(
+            ex.value)
 
         with pytest.raises(CoreError) as ex:
             Core(schema_files=[str(schema_f)])
-        assert "Unknown file format. Supported file endings is" in str(ex.value)
+        assert "Unknown file format. Supported file endings is" in str(
+            ex.value)
 
     def test_load_empty_json_file(self, tmpdir):
         """
@@ -173,7 +177,8 @@ class TestCore(object):
 
         Currently file 2a.yaml & 2b.yaml is designed to cause exception.
         """
-        c = Core(source_file=self.f("cli", "2a.yaml"), schema_files=[self.f("cli", "2b.yaml")])
+        c = Core(source_file=self.f("cli", "2a.yaml"),
+                 schema_files=[self.f("cli", "2b.yaml")])
         c.validate(raise_exception=False)
 
         assert c.validation_errors == [
@@ -325,19 +330,24 @@ class TestCore(object):
 
         for passing_test in pass_tests:
             try:
-                c = Core(source_file=passing_test[1], schema_files=passing_test[0])
+                c = Core(
+                    source_file=passing_test[1], schema_files=passing_test[0])
                 c.validate()
-                compare(c.validation_errors, [], prefix="No validation errors should exist...")
+                compare(c.validation_errors, [],
+                        prefix="No validation errors should exist...")
             except Exception as e:
-                print("ERROR RUNNING FILE: {0} : {1}".format(passing_test[0], passing_test[1]))
+                print("ERROR RUNNING FILE: {0} : {1}".format(
+                    passing_test[0], passing_test[1]))
                 raise e
 
             # This serve as an extra schema validation that tests more complex structures then testrule.py do
-            compare(c.root_rule.schema_str, passing_test[2], prefix="Parsed rules is not correct, something have changed...")
+            compare(c.root_rule.schema_str,
+                    passing_test[2], prefix="Parsed rules is not correct, something have changed...")
 
         for failing_test in failing_tests:
-            with pytest.raises(failing_test[2], message="Test files: {0} : {1}".format(", ".join(failing_test[0]), failing_test[1])):
-                c = Core(schema_files=failing_test[0], source_file=failing_test[1])
+            with pytest.raises(failing_test[2]):
+                c = Core(
+                    schema_files=failing_test[0], source_file=failing_test[1])
                 c.validate()
 
             if not c.validation_errors:
@@ -537,15 +547,19 @@ class TestCore(object):
 
                     try:
                         print("Running test files: {0}".format(f))
-                        c = Core(source_data=data, schema_data=schema, strict_rule_validation=True, allow_assertions=True)
+                        c = Core(source_data=data, schema_data=schema,
+                                 strict_rule_validation=True, allow_assertions=True)
                         c.validate()
-                        compare(c.validation_errors, [], prefix="No validation errors should exist...")
+                        compare(c.validation_errors, [],
+                                prefix="No validation errors should exist...")
                     except Exception as e:
-                        print("ERROR RUNNING FILES: {0} : {1}:{2}".format(f, document_index, document.get('name', 'UNKNOWN')))
+                        print("ERROR RUNNING FILES: {0} : {1}:{2}".format(
+                            f, document_index, document.get('name', 'UNKNOWN')))
                         raise e
 
             # This serve as an extra schema validation that tests more complex structures then testrule.py do
-            compare(c.root_rule.schema_str, schema, prefix="Parsed rules is not correct, something have changed... files : {0} : {1}".format(f, document_index))
+            compare(c.root_rule.schema_str, schema,
+                    prefix="Parsed rules is not correct, something have changed... files : {0} : {1}".format(f, document_index))
 
         for failing_test, exception_type in _fail_tests:
             f = self.f(os.path.join("fail", failing_test))
@@ -559,12 +573,14 @@ class TestCore(object):
 
                     try:
                         print("Running test files: {0}".format(f))
-                        c = Core(source_data=data, schema_data=schema, strict_rule_validation=True, allow_assertions=True)
+                        c = Core(source_data=data, schema_data=schema,
+                                 strict_rule_validation=True, allow_assertions=True)
                         c.validate()
                     except exception_type as e:
                         pass
                     else:
-                        print("ERROR RUNNING FILES: {0} : {1}:{2}".format(f, document_index, document.get('name', 'UNKNOWN')))
+                        print("ERROR RUNNING FILES: {0} : {1}:{2}".format(
+                            f, document_index, document.get('name', 'UNKNOWN')))
                         raise AssertionError("Exception {0} not raised as expected... FILES: {1} : {2} : {3}:{4}".format(
                             exception_type, exception_type, failing_test, document_index, document.get('name', 'UNKNOWN')))
 
